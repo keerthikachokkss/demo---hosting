@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Keerthika // root access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===================== THEME TOKENS ===================== */
+  :root[data-theme="dark"]{
+    --bg:#060b08;
+    --bg-soft:#0c1410;
+    --panel:#0e1713;
+    --border:#1d3a26;
+    --text:#d9ffe2;
+    --text-dim:#7fae8d;
+    --green:#39ff14;
+    --green-soft:#00ffa2;
+    --pink:#ff6ec7;
+    --lavender:#c792ea;
+    --glow: 0 0 8px currentColor;
+    --rain-opacity: 0.5;
+    --critter-filter: drop-shadow(0 0 6px var(--green-soft));
+  }
+  :root[data-theme="light"]{
+    --bg:#fff6fb;
+    --bg-soft:#fdeaf6;
+    --panel:#ffffff;
+    --border:#f3c9e6;
+    --text:#3a1e33;
+    --text-dim:#8a6b81;
+    --green:#1aa34a;
+    --green-soft:#0c8f6a;
+    --pink:#e0469e;
+    --lavender:#9a5fd0;
+    --glow: 0 0 0 transparent;
+    --rain-opacity: 0;
+    --critter-filter: drop-shadow(0 0 6px var(--pink));
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Quicksand', sans-serif;
+    transition: background .5s ease, color .5s ease;
+    overflow-x: hidden;
+  }
+  h1,h2,h3, .mono{ font-family: 'Share Tech Mono', monospace; letter-spacing: .5px; }
+  a{ color: var(--green-soft); text-decoration:none; }
+  ::selection{ background: var(--pink); color:#fff; }
+  :focus-visible{ outline: 2px solid var(--pink); outline-offset: 3px; }
+
+  section{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 90px 24px 40px;
+    position: relative;
+    z-index: 2;
+  }
+  .eyebrow{
+    font-family:'Share Tech Mono', monospace;
+    color: var(--pink);
+    font-size: .8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2.title{
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--green);
+    text-shadow: var(--glow);
+    margin: 0 0 28px;
+    border-left: 3px solid var(--pink);
+    padding-left: 14px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+  /* ===================== BACKGROUND LAYERS ===================== */
+  #matrix-bg{
+    position: fixed; inset:0; z-index:0;
+    opacity: var(--rain-opacity);
+    transition: opacity .6s ease;
+    pointer-events:none;
+  }
+  #critters{ position: fixed; inset:0; overflow:hidden; z-index:1; pointer-events:none; }
+  .critter{
+    position:absolute;
+    top: var(--y);
+    left:-12vw;
+    filter: var(--critter-filter);
+    opacity:.85;
+    animation: fly linear infinite;
+    animation-duration: var(--dur);
+    animation-delay: var(--delay);
+  }
+  .critter svg{ width: var(--size); height: var(--size); display:block; }
+  @keyframes fly{
+    0%   { transform: translateX(0) translateY(0) rotate(0deg); }
+    25%  { transform: translateX(35vw) translateY(-30px) rotate(4deg); }
+    50%  { transform: translateX(70vw) translateY(20px) rotate(-3deg); }
+    75%  { transform: translateX(105vw) translateY(-15px) rotate(3deg); }
+    100% { transform: translateX(140vw) translateY(0) rotate(0deg); }
+  }
+
+  /* ===================== NAV ===================== */
+  nav{
+    position: fixed; top:0; left:0; right:0; z-index: 10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 24px;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo{ font-family:'Share Tech Mono'; color:var(--green); font-size:1.05rem; }
+  .logo span{ color: var(--pink); }
+  .nav-links{ display:flex; gap:18px; flex-wrap:wrap; }
+  .nav-links a{
+    color: var(--text-dim); font-family:'Share Tech Mono'; font-size:.78rem;
+    text-transform: uppercase; letter-spacing:1px; transition: color .2s;
+  }
+  .nav-links a:hover{ color: var(--pink); }
+
+  .theme-toggle{
+    border:1px solid var(--border); background: var(--panel); color: var(--text);
+    border-radius: 20px; padding: 6px 14px; cursor:pointer;
+    font-family:'Share Tech Mono'; font-size:.75rem;
+  }
+
+  /* ===================== HERO ===================== */
+  #home{ min-height: 100vh; display:flex; flex-direction:column; justify-content:center; padding-top: 110px; }
+  .hero-pretitle{ color: var(--text-dim); font-family:'Share Tech Mono'; font-size:.9rem; }
+  .hero-pretitle::before{ content:"> "; color: var(--green); }
+  h1.hero-name{
+    font-size: clamp(2.4rem, 8vw, 4.6rem);
+    margin: 8px 0;
+    color: var(--green);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--green) 60%, transparent);
+  }
+  #typed-role{ color: var(--pink); }
+  .cursor{ display:inline-block; width:10px; background: var(--green); margin-left:2px; animation: blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .hero-sub{ max-width: 600px; color: var(--text-dim); line-height:1.6; }
+  .hero-badges{ display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
+  .badge{
+    border:1px solid var(--border); padding:6px 14px; border-radius:20px;
+    font-family:'Share Tech Mono'; font-size:.75rem; color: var(--lavender);
+  }
+  #visitor-box{
+    margin-top: 30px; display:inline-flex; gap:10px; align-items:center;
+    font-family:'Share Tech Mono'; color: var(--text-dim); font-size:.85rem;
+  }
+  #visitor-count{ color: var(--green-soft); font-size:1.1rem; }
+
+  /* ===================== ABOUT ===================== */
+  .about-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+  @media (max-width: 720px){ .about-grid{ grid-template-columns: 1fr; } }
+  blockquote.quote-pill{
+    font-family:'Caveat', cursive; font-size:1.5rem; color: var(--pink);
+    border-left: 3px dashed var(--lavender); margin: 18px 0; padding: 6px 18px;
+  }
+  .ai-badge{
+    display:inline-flex; align-items:center; gap:8px; margin-top:18px;
+    font-family:'Share Tech Mono'; font-size:.78rem; color: var(--green-soft);
+    border:1px dashed var(--green-soft); padding:8px 12px; border-radius:10px;
+  }
+
+  /* ===================== EDUCATION ===================== */
+  .edu-table{ width:100%; border-collapse: collapse; font-family:'Share Tech Mono'; font-size:.9rem; }
+  .edu-table th, .edu-table td{ padding:12px 10px; border-bottom:1px solid var(--border); text-align:left; }
+  .edu-table th{ color: var(--pink); text-transform:uppercase; font-size:.7rem; letter-spacing:1px; }
+  .edu-table tr:last-child td{ border-bottom:none; }
+
+  /* ===================== SKILLS ===================== */
+  .skill-row{ margin-bottom:18px; }
+  .skill-row .label{ display:flex; justify-content:space-between; font-family:'Share Tech Mono'; font-size:.85rem; margin-bottom:6px; }
+  .bar{ height:10px; border-radius:6px; background: var(--bg-soft); border:1px solid var(--border); overflow:hidden; }
+  .bar i{ display:block; height:100%; background: linear-gradient(90deg, var(--green), var(--pink)); width:0%; border-radius:6px; transition: width 1.4s ease; }
+
+  /* ===================== FOCUS / INSPIRATION ===================== */
+  .grid3{ display:grid; grid-template-columns: repeat(3,1fr); gap:18px; }
+  @media (max-width: 800px){ .grid3{ grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 540px){ .grid3{ grid-template-columns: 1fr; } }
+  .grid3 .card h3{ color: var(--green-soft); margin-top:0; font-size:1rem; }
+  .grid3 .card p{ color: var(--text-dim); font-size:.92rem; line-height:1.5; }
+  .grid3 .card .emoji{ font-size:1.6rem; }
+
+  /* ===================== JOURNEY ===================== */
+  .journey{ display:flex; flex-direction:column; gap:14px; }
+  .level{
+    display:flex; gap:16px; align-items:flex-start;
+    border:1px solid var(--border); border-radius:12px; padding:14px 18px; background: var(--panel);
+  }
+  .level .lvl-tag{
+    font-family:'Share Tech Mono'; color:#06140c; background: var(--green-soft);
+    border-radius:8px; padding:4px 10px; font-size:.75rem; height:fit-content; white-space:nowrap;
+  }
+  .level.locked{ opacity:.45; }
+  .level.locked .lvl-tag{ background: var(--text-dim); }
+  .level h4{ margin:0 0 4px; font-size:.95rem; }
+  .level p{ margin:0; color: var(--text-dim); font-size:.85rem; }
+
+  /* ===================== QUOTE ===================== */
+  #quote-box{
+    text-align:center; padding: 30px; border:1px dashed var(--lavender); border-radius:16px;
+  }
+  #quote-text{ font-family:'Caveat', cursive; font-size:1.6rem; color: var(--pink); min-height: 60px; }
+  button.cta{
+    font-family:'Share Tech Mono'; background: var(--green); color:#04140a; border:none;
+    padding:10px 20px; border-radius:8px; cursor:pointer; font-size:.85rem; letter-spacing:1px;
+    transition: transform .15s ease;
+  }
+  button.cta:hover{ transform: translateY(-2px); }
+  button.cta.alt{ background: var(--pink); color:#1a0512; }
+
+  /* ===================== BOT ===================== */
+  #bot-window{
+    border:1px solid var(--border); border-radius:14px; background:#04100a; overflow:hidden;
+  }
+  :root[data-theme="light"] #bot-window{ background:#1e0e1a; }
+  #bot-header{
+    display:flex; align-items:center; gap:8px; padding:10px 14px;
+    background: var(--bg-soft); border-bottom:1px solid var(--border);
+    font-family:'Share Tech Mono'; font-size:.8rem; color: var(--text-dim);
+  }
+  .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  #bot-log{
+    height: 260px; overflow-y:auto; padding:14px; font-family:'Share Tech Mono'; font-size:.85rem;
+    display:flex; flex-direction:column; gap:10px; color: var(--green-soft);
+  }
+  #bot-log .you{ color: var(--lavender); align-self:flex-end; text-align:right; }
+  #bot-form{ display:flex; border-top:1px solid var(--border); }
+  #bot-input{
+    flex:1; background:transparent; border:none; padding:12px 14px; color:var(--text);
+    font-family:'Share Tech Mono'; font-size:.85rem;
+  }
+  #bot-input:focus{ outline:none; }
+  #bot-form button{ border:none; background: var(--pink); color:#1a0512; padding:0 18px; cursor:pointer; font-family:'Share Tech Mono'; }
+
+  /* ===================== CONTACT ===================== */
+  .contact-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  @media (max-width: 640px){ .contact-grid{ grid-template-columns: 1fr; } }
+  .contact-card{ text-align:center; }
+  .contact-card .label{ font-family:'Share Tech Mono'; color: var(--pink); font-size:.78rem; text-transform:uppercase; letter-spacing:1px; }
+  .contact-card .value{ font-size:1.05rem; margin:10px 0; word-break:break-all; }
+  #phone-reveal{ font-family:'Caveat', cursive; font-size:1.3rem; color: var(--green-soft); display:none; }
+
+  footer{ text-align:center; padding:40px 20px 60px; color: var(--text-dim); font-family:'Share Tech Mono'; font-size:.75rem; position:relative; z-index:2; }
+
+  @media (prefers-reduced-motion: reduce){
+    .critter, .cursor{ animation: none !important; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+<div id="critters"></div>
+
+<nav>
+  <div class="logo">keerthika<span>.exe</span></div>
+  <div class="nav-links">
+    <a href="#home">home</a>
+    <a href="#about">about</a>
+    <a href="#education">education</a>
+    <a href="#skills">skills</a>
+    <a href="#focus">focus</a>
+    <a href="#inspiration">inspiration</a>
+    <a href="#journey">journey</a>
+    <a href="#bot">keerthi_bot</a>
+    <a href="#contact">contact</a>
+  </div>
+  <button class="theme-toggle" id="theme-toggle">🌙 hacker mode</button>
+</nav>
+
+<!-- ===================== HOME ===================== -->
+<section id="home">
+  <div class="hero-pretitle">whoami</div>
+  <h1 class="hero-name">Keerthika</h1>
+  <div class="hero-sub mono" style="font-size:1.1rem;">
+    <span id="typed-role"></span><span class="cursor"></span>
+  </div>
+  <p class="hero-sub">
+    First-year BSc Computer Science student at RD College. Half hacker, half hopeless romantic
+    about technology. Currently compiling dreams, debugging confidence, and learning to code
+    one semicolon at a time.
+  </p>
+  <div class="hero-badges">
+    <div class="badge">🐉 dragon energy</div>
+    <div class="badge">🦋 butterfly soul</div>
+    <div class="badge">💻 future Elon-in-training</div>
+    <div class="badge">✨ first AI-built project</div>
+  </div>
+  <div id="visitor-box">
+    <span>visitors today:</span>
+    <span id="visitor-count" class="mono">0</span>
+    <span style="font-size:.7rem;">(just for fun, not real tracking 😄)</span>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section id="about">
+  <div class="eyebrow">// 01</div>
+  <h2 class="title">About Me</h2>
+  <div class="about-grid">
+    <div class="card">
+      <p>
+        Hi! I'm Keerthika, a first-year BSc Computer Science student. I scored 442 marks in my
+        12th standard, and ever since, I've been chasing the same energy in tech — curious,
+        a little chaotic, and always trying to learn something new.
+      </p>
+      <p>
+        I'm genuinely enthusiastic about programming. I don't know everything yet (this is
+        literally my very first HTML project!), but I show up, I try, and I get a little better
+        every day. My dream is to build things that matter — the kind of impact people like
+        Elon Musk have made — starting from exactly where I am right now: a beginner with a lot
+        of curiosity.
+      </p>
+      <blockquote class="quote-pill">"Even talented people were once beginners."</blockquote>
+      <div class="ai-badge">🤖 Fun fact: this is the first project I've built with AI's help — a real milestone in my coding journey.</div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; gap:14px; justify-content:center;">
+      <div><strong style="color:var(--green-soft)">Name</strong><div class="text-dim" style="color:var(--text-dim)">Keerthika</div></div>
+      <div><strong style="color:var(--green-soft)">Currently studying</strong><div style="color:var(--text-dim)">BSc Computer Science, 1st Year</div></div>
+      <div><strong style="color:var(--green-soft)">College</strong><div style="color:var(--text-dim)">RD College</div></div>
+      <div><strong style="color:var(--green-soft)">12th marks</strong><div style="color:var(--text-dim)">442</div></div>
+      <div><strong style="color:var(--green-soft)">Status</strong><div style="color:var(--text-dim)">Beginner, and proud of it</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EDUCATION ===================== -->
+<section id="education">
+  <div class="eyebrow">// 02</div>
+  <h2 class="title">Education Background</h2>
+  <div class="card">
+    <table class="edu-table">
+      <thead>
+        <tr><th>Stage</th><th>Institution</th><th>Detail</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Higher Secondary (12th)</td><td>—</td><td>442 marks</td><td>Completed ✅</td></tr>
+        <tr><td>Undergraduate</td><td>RD College</td><td>BSc Computer Science</td><td>1st Year — in progress 🟢</td></tr>
+        <tr><td>Next Level</td><td>???</td><td>Wherever curiosity leads</td><td>Loading... ⏳</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== SKILLS ===================== -->
+<section id="skills">
+  <div class="eyebrow">// 03</div>
+  <h2 class="title">Skills</h2>
+  <div class="card">
+    <div class="skill-row"><div class="label"><span>Curiosity</span><span>95%</span></div><div class="bar"><i data-w="95"></i></div></div>
+    <div class="skill-row"><div class="label"><span>Persistence</span><span>90%</span></div><div class="bar"><i data-w="90"></i></div></div>
+    <div class="skill-row"><div class="label"><span>HTML &amp; CSS</span><span>40% (learning!)</span></div><div class="bar"><i data-w="40"></i></div></div>
+    <div class="skill-row"><div class="label"><span>Logical Thinking</span><span>65%</span></div><div class="bar"><i data-w="65"></i></div></div>
+    <div class="skill-row"><div class="label"><span>Googling errors at 1am</span><span>100%</span></div><div class="bar"><i data-w="100"></i></div></div>
+  </div>
+</section>
+
+<!-- ===================== FOCUS ===================== -->
+<section id="focus">
+  <div class="eyebrow">// 04</div>
+  <h2 class="title">Current Focus</h2>
+  <div class="grid3">
+    <div class="card"><div class="emoji">📚</div><h3>Learning the basics</h3><p>HTML, CSS and JavaScript fundamentals — building real things instead of just reading about them.</p></div>
+    <div class="card"><div class="emoji">🤖</div><h3>Learning with AI</h3><p>Using AI tools like Claude to learn faster and build my very first projects, like this site.</p></div>
+    <div class="card"><div class="emoji">🧠</div><h3>Thinking like a programmer</h3><p>Practicing logic, problem-solving, and getting comfortable with being a total beginner.</p></div>
+  </div>
+</section>
+
+<!-- ===================== INSPIRATION ===================== -->
+<section id="inspiration">
+  <div class="eyebrow">// 05</div>
+  <h2 class="title">Inspiration</h2>
+  <div class="grid3">
+    <div class="card"><div class="emoji">🚀</div><h3>Elon Musk</h3><p>His ambition and "just build it" energy is exactly the kind of fearless tech mindset I want to grow into.</p></div>
+    <div class="card"><div class="emoji">🐉</div><h3>Dragons</h3><p>Fierce, powerful, a little mysterious — basically my mood when a piece of code finally works.</p></div>
+    <div class="card"><div class="emoji">🦋</div><h3>Butterflies</h3><p>Soft, free, always transforming into something new — basically my mood every other day of learning.</p></div>
+  </div>
+</section>
+
+<!-- ===================== JOURNEY ===================== -->
+<section id="journey">
+  <div class="eyebrow">// 06</div>
+  <h2 class="title">Level Up Journey</h2>
+  <div class="journey">
+    <div class="level"><span class="lvl-tag">LVL 1</span><div><h4>Finished 12th Standard</h4><p>Scored 442 marks and unlocked the "College Student" achievement.</p></div></div>
+    <div class="level"><span class="lvl-tag">LVL 2</span><div><h4>Started BSc Computer Science</h4><p>Joined RD College, 1st year. Quest: survive semester one.</p></div></div>
+    <div class="level"><span class="lvl-tag">LVL 3</span><div><h4>Built first HTML project (this one!)</h4><p>Used AI as a learning buddy and shipped my very first website.</p></div></div>
+    <div class="level locked"><span class="lvl-tag">LVL 4</span><div><h4>Learn JavaScript &amp; real projects</h4><p>🔒 Locked — coming soon.</p></div></div>
+    <div class="level locked"><span class="lvl-tag">LVL ∞</span><div><h4>Build something that matters</h4><p>🔒 Locked — the Elon Musk arc begins here.</p></div></div>
+  </div>
+</section>
+
+<!-- ===================== QUOTE GENERATOR ===================== -->
+<section id="quote">
+  <div class="eyebrow">// 07</div>
+  <h2 class="title">Today's Quote</h2>
+  <div id="quote-box" class="card">
+    <div id="quote-text">"Even talented people were once beginners."</div>
+    <button class="cta" id="quote-btn" style="margin-top:14px;">✨ Generate Today's Quote</button>
+  </div>
+</section>
+
+<!-- ===================== KEERTHI BOT ===================== -->
+<section id="bot">
+  <div class="eyebrow">// 08</div>
+  <h2 class="title">Keerthi Bot</h2>
+  <p style="color:var(--text-dim); margin-top:-10px;">A silly little chatbot that "knows" me. Ask it about my name, college, marks, dreams, or hobbies.</p>
+  <div id="bot-window">
+    <div id="bot-header"><span class="dot" style="background:var(--green-soft)"></span><span class="dot" style="background:var(--pink)"></span><span class="dot" style="background:var(--lavender)"></span>&nbsp; keerthi_bot — terminal</div>
+    <div id="bot-log"></div>
+    <form id="bot-form">
+      <input id="bot-input" class="mono" type="text" placeholder="ask keerthi_bot something..." autocomplete="off" />
+      <button type="submit">send</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section id="contact">
+  <div class="eyebrow">// 09</div>
+  <h2 class="title">Contact</h2>
+  <div class="contact-grid">
+    <div class="card contact-card">
+      <div class="label">Email</div>
+      <div class="value mono">keerthika.chokkss@gmail.com</div>
+      <button class="cta" id="copy-email">📋 Copy Email</button>
+    </div>
+    <div class="card contact-card">
+      <div class="label">Phone Number</div>
+      <button class="cta alt" id="phone-btn">📱 Reveal Number</button>
+      <div id="phone-reveal">sike. you thought I'd give you my number 😏</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  built with 🐉 + 🦋 + a lot of curiosity — Keerthika's first AI-assisted project, 2026
+</footer>
+
+<script>
+/* ===================== THEME TOGGLE ===================== */
+const root = document.documentElement;
+const themeBtn = document.getElementById('theme-toggle');
+function applyThemeLabel(){
+  const t = root.getAttribute('data-theme');
+  themeBtn.textContent = t === 'dark' ? '🌙 hacker mode' : '🦋 girly mode';
+}
+themeBtn.addEventListener('click', () => {
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  applyThemeLabel();
+});
+applyThemeLabel();
+
+/* ===================== MATRIX RAIN ===================== */
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+const chars = '01アイウエオカキクケコ<>/{}#$%KEERTHIKA'.split('');
+let columns = Math.floor(canvas.width / 16);
+let drops = Array(columns).fill(1);
+function drawMatrix(){
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(0,0,canvas.width, canvas.height);
+  ctx.fillStyle = getComputedStyle(root).getPropertyValue('--green').trim() || '#39ff14';
+  ctx.font = '14px monospace';
+  for(let i=0;i<drops.length;i++){
+    const text = chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(text, i*16, drops[i]*16);
+    if(drops[i]*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 45);
+
+/* ===================== FLYING CRITTERS (dragon + butterfly) ===================== */
+const dragonSVG = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 35 Q20 10 40 25 Q55 5 70 20 Q85 10 95 25 Q80 30 70 28 Q75 40 60 38 Q65 48 50 42 Q35 50 30 38 Q15 42 18 30 Q8 35 5 35 Z" fill="currentColor" opacity="0.9"/>
+</svg>`;
+const butterflySVG = `<svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+  <path d="M50 40 C40 10 5 5 10 30 C12 45 35 45 50 40 Z" fill="currentColor"/>
+  <path d="M50 40 C60 10 95 5 90 30 C88 45 65 45 50 40 Z" fill="currentColor"/>
+  <path d="M50 40 C42 60 15 65 18 50 C20 42 38 42 50 40 Z" fill="currentColor" opacity="0.85"/>
+  <path d="M50 40 C58 60 85 65 82 50 C80 42 62 42 50 40 Z" fill="currentColor" opacity="0.85"/>
+  <rect x="48" y="36" width="4" height="14" rx="2" fill="currentColor"/>
+</svg>`;
+const critterLayer = document.getElementById('critters');
+const critterTypes = [
+  {svg: dragonSVG, color: 'var(--green)', size: '90px'},
+  {svg: butterflySVG, color: 'var(--pink)', size: '46px'},
+  {svg: butterflySVG, color: 'var(--lavender)', size: '36px'},
+];
+for(let i=0;i<7;i++){
+  const type = critterTypes[i % critterTypes.length];
+  const el = document.createElement('div');
+  el.className = 'critter';
+  el.style.setProperty('--y', (Math.random()*70+5)+'vh');
+  el.style.setProperty('--dur', (18 + Math.random()*14)+'s');
+  el.style.setProperty('--delay', (-Math.random()*20)+'s');
+  el.style.setProperty('--size', type.size);
+  el.style.color = type.color;
+  el.innerHTML = type.svg;
+  critterLayer.appendChild(el);
+}
+
+/* ===================== TYPED ROLE TEXT ===================== */
+const roles = [
+  'BSc CS · 1st Year',
+  'Aspiring Technologist',
+  'Beginner Coder, Big Dreams',
+  'Future Elon, Probably',
+];
+let roleIndex = 0, charIndex = 0, typing = true;
+const typedEl = document.getElementById('typed-role');
+function typeLoop(){
+  const current = roles[roleIndex];
+  if(typing){
+    typedEl.textContent = current.slice(0, charIndex+1);
+    charIndex++;
+    if(charIndex === current.length){ typing = false; setTimeout(typeLoop, 1400); return; }
+  } else {
+    typedEl.textContent = current.slice(0, charIndex-1);
+    charIndex--;
+    if(charIndex === 0){ typing = true; roleIndex = (roleIndex+1) % roles.length; }
+  }
+  setTimeout(typeLoop, typing ? 80 : 40);
+}
+typeLoop();
+
+/* ===================== VISITOR COUNTER (cosmetic) ===================== */
+const visitorEl = document.getElementById('visitor-count');
+const visitorTarget = 500 + Math.floor(Math.random()*350);
+let visitorCurrent = 0;
+const visitorInterval = setInterval(()=>{
+  visitorCurrent += Math.ceil(visitorTarget/60);
+  if(visitorCurrent >= visitorTarget){ visitorCurrent = visitorTarget; clearInterval(visitorInterval); }
+  visitorEl.textContent = visitorCurrent;
+}, 30);
+
+/* ===================== SKILL BARS ===================== */
+const bars = document.querySelectorAll('.bar i');
+const skillObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.style.width = entry.target.dataset.w + '%';
+    }
+  });
+}, {threshold: 0.4});
+bars.forEach(b => skillObserver.observe(b));
+
+/* ===================== QUOTE GENERATOR ===================== */
+const quotes = [
+  "Even talented people were once beginners.",
+  "Every expert was once a confused beginner Googling the same error twice.",
+  "Small steps in code today, big launches tomorrow.",
+  "Curiosity compiles. Fear doesn't.",
+  "You don't need to know everything to start — you just need to start.",
+  "First projects are messy. Mine has dragons in it. No regrets.",
+  "Done is better than perfect, especially at 1am.",
+  "Be the kind of beginner future-you will be proud of.",
+];
+const quoteText = document.getElementById('quote-text');
+document.getElementById('quote-btn').addEventListener('click', ()=>{
+  quoteText.style.opacity = 0;
+  setTimeout(()=>{
+    const q = quotes[Math.floor(Math.random()*quotes.length)];
+    quoteText.textContent = '"' + q + '"';
+    quoteText.style.transition = 'opacity .4s ease';
+    quoteText.style.opacity = 1;
+  }, 250);
+});
+
+/* ===================== KEERTHI BOT ===================== */
+const botLog = document.getElementById('bot-log');
+const botForm = document.getElementById('bot-form');
+const botInput = document.getElementById('bot-input');
+
+function addMsg(text, who){
+  const div = document.createElement('div');
+  div.className = who === 'you' ? 'you' : '';
+  div.textContent = (who === 'you' ? '> ' : '🤖 ') + text;
+  botLog.appendChild(div);
+  botLog.scrollTop = botLog.scrollHeight;
+}
+addMsg("hi! I'm keerthi_bot. ask me anything about Keerthika (answers not guaranteed to be useful).", 'bot');
+
+const knowledge = [
+  { keys: ['name','who are you'], a: "I'm Keerthika! Yes, I picked this username myself, and yes, I'm proud of it." },
+  { keys: ['college','study','studying','course'], a: "BSc Computer Science, 1st year, at RD College. Currently majoring in chaos and minoring in semicolons." },
+  { keys: ['marks','12th','score'], a: "442 in 12th standard! My brain cells held a union meeting and actually cooperated that day." },
+  { keys: ['dream','elon','goal','future'], a: "I want to be like Elon Musk... minus the Twitter drama, plus way more dragons." },
+  { keys: ['hobby','like','love','interest'], a: "Butterflies, dragons, and code that runs on the first try — extremely rare, like a unicorn sighting." },
+  { keys: ['age','old'], a: "Old enough to debug your code, young enough to still ask 'how do I center a div'." },
+  { keys: ['single','relationship','dating'], a: "Currently in a very committed relationship with Stack Overflow." },
+  { keys: ['robot','ai','bot'], a: "If I were a robot I'd at least have better Wi-Fi than this." },
+  { keys: ['skill','good at'], a: "Curiosity: 95%. Actual coding skill: still loading, please be patient." },
+  { keys: ['email','contact'], a: "Scroll down to the contact section! And no, you're not getting the phone number. Nice try though." },
+];
+const fallback = [
+  "hmm, that's above my pay grade (I don't get paid, I'm a chatbot).",
+  "I'll pretend I understood that and say: dragons. always dragons.",
+  "Error 404: witty response not found. Try asking about my college or my dreams!",
+  "Keerthika hasn't trained me on that yet. Blame her, not me.",
+];
+botForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const val = botInput.value.trim();
+  if(!val) return;
+  addMsg(val, 'you');
+  const lower = val.toLowerCase();
+  const match = knowledge.find(k => k.keys.some(key => lower.includes(key)));
+  const reply = match ? match.a : fallback[Math.floor(Math.random()*fallback.length)];
+  setTimeout(()=> addMsg(reply, 'bot'), 350);
+  botInput.value = '';
+});
+
+/* ===================== CONTACT INTERACTIONS ===================== */
+document.getElementById('copy-email').addEventListener('click', (e)=>{
+  navigator.clipboard.writeText('keerthika.chokkss@gmail.com').then(()=>{
+    e.target.textContent = '✅ Copied!';
+    setTimeout(()=> e.target.textContent = '📋 Copy Email', 1800);
+  }).catch(()=>{ e.target.textContent = 'copy manually 👀'; });
+});
+document.getElementById('phone-btn').addEventListener('click', ()=>{
+  const reveal = document.getElementById('phone-reveal');
+  reveal.style.display = reveal.style.display === 'block' ? 'none' : 'block';
+});
+</script>
+</body>
+</html>
